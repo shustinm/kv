@@ -47,12 +47,7 @@ fn handle_subcommand(command: &Commands) -> Result<(), String> {
         }
         Commands::Completions { shell } => {
             let mut buf = Vec::new();
-            clap_complete::generate(
-                *shell,
-                &mut Cli::command(),
-                "kv",
-                &mut buf,
-            );
+            clap_complete::generate(*shell, &mut Cli::command(), "kv", &mut buf);
             let raw = String::from_utf8_lossy(&buf);
             print!("{}", patch_zsh_completions(*shell, &raw));
         }

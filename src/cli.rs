@@ -14,7 +14,12 @@ fn default_kvim_conf() -> PathBuf {
 }
 
 #[derive(Debug, Parser)]
-#[command(name = "kv", version, about = "Launcher for KoalaVim (neovim configuration)", trailing_var_arg = true)]
+#[command(
+    name = "kv",
+    version,
+    about = "Launcher for KoalaVim (neovim configuration)",
+    trailing_var_arg = true
+)]
 pub struct Cli {
     /// Verbose
     #[arg(short, long)]
@@ -247,7 +252,11 @@ mod tests {
         let cli = Cli::try_parse_from(["kv", "env", "rename", "old", "new"]).unwrap();
         match cli.command {
             Some(Commands::Env {
-                action: EnvAction::Rename { ref current, ref new_name },
+                action:
+                    EnvAction::Rename {
+                        ref current,
+                        ref new_name,
+                    },
             }) => {
                 assert_eq!(current, "old");
                 assert_eq!(new_name, "new");
@@ -352,7 +361,11 @@ mod tests {
         let cli = Cli::try_parse_from(["kv", "env", "fork", "source-env", "new-env"]).unwrap();
         match cli.command {
             Some(Commands::Env {
-                action: EnvAction::Fork { ref source, ref name },
+                action:
+                    EnvAction::Fork {
+                        ref source,
+                        ref name,
+                    },
             }) => {
                 assert_eq!(source, "source-env");
                 assert_eq!(name, "new-env");

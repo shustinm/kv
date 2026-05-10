@@ -132,22 +132,10 @@ mod tests {
         env::set_var("XDG_STATE_HOME", base.join("state"));
         env::set_var("XDG_CACHE_HOME", base.join("cache"));
 
-        assert_eq!(
-            env_config_dir("myenv"),
-            base.join("config/kvim-envs/myenv")
-        );
-        assert_eq!(
-            env_data_dir("myenv"),
-            base.join("data/kvim-envs/myenv")
-        );
-        assert_eq!(
-            env_state_dir("myenv"),
-            base.join("state/kvim-envs/myenv")
-        );
-        assert_eq!(
-            env_cache_dir("myenv"),
-            base.join("cache/kvim-envs/myenv")
-        );
+        assert_eq!(env_config_dir("myenv"), base.join("config/kvim-envs/myenv"));
+        assert_eq!(env_data_dir("myenv"), base.join("data/kvim-envs/myenv"));
+        assert_eq!(env_state_dir("myenv"), base.join("state/kvim-envs/myenv"));
+        assert_eq!(env_cache_dir("myenv"), base.join("cache/kvim-envs/myenv"));
 
         env::remove_var("XDG_CONFIG_HOME");
         env::remove_var("XDG_DATA_HOME");
@@ -176,9 +164,6 @@ mod tests {
             env_state_dir("myenv"),
             home.join(".local/state/kvim-envs/myenv")
         );
-        assert_eq!(
-            env_cache_dir("myenv"),
-            home.join(".cache/kvim-envs/myenv")
-        );
+        assert_eq!(env_cache_dir("myenv"), home.join(".cache/kvim-envs/myenv"));
     }
 }

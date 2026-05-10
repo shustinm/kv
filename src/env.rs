@@ -28,7 +28,11 @@ fn is_git_url(s: &str) -> bool {
     s.contains("://") || s.starts_with("git@")
 }
 
-pub fn cmd_env_create(name: &str, from: Option<&str>, branch: Option<&str>) -> Result<PathBuf, String> {
+pub fn cmd_env_create(
+    name: &str,
+    from: Option<&str>,
+    branch: Option<&str>,
+) -> Result<PathBuf, String> {
     validate_env_name(name).map_err(|e| format!("Invalid env name: {}", e))?;
 
     let config_dir = env_config_dir(name);
@@ -53,7 +57,9 @@ pub fn cmd_env_create(name: &str, from: Option<&str>, branch: Option<&str>) -> R
                 cmd.arg("--branch").arg(b);
             }
             cmd.arg(source).arg(&config_dir);
-            let status = cmd.status().map_err(|e| format!("Failed to run git clone: {}", e))?;
+            let status = cmd
+                .status()
+                .map_err(|e| format!("Failed to run git clone: {}", e))?;
             if !status.success() {
                 return Err("git clone failed".to_string());
             }
@@ -71,10 +77,7 @@ pub fn cmd_env_create(name: &str, from: Option<&str>, branch: Option<&str>) -> R
             } else {
                 let p = PathBuf::from(source);
                 if !p.exists() {
-                    return Err(format!(
-                        "Source '{}' not found as env name or path",
-                        source
-                    ));
+                    return Err(format!("Source '{}' not found as env name or path", source));
                 }
                 p
             };
@@ -112,12 +115,9 @@ pub fn cmd_env_init(name: &str) -> Result<PathBuf, String> {
         "Copy from existing config directory",
         "Clone from a git template",
     ];
-    let selection = Select::new(
-        &format!("How do you want to set up '{}'?", name),
-        items,
-    )
-    .prompt()
-    .map_err(|e| format!("Prompt failed: {}", e))?;
+    let selection = Select::new(&format!("How do you want to set up '{}'?", name), items)
+        .prompt()
+        .map_err(|e| format!("Prompt failed: {}", e))?;
 
     match selection {
         "Clean (empty config)" => cmd_env_create(name, None, None),
@@ -286,7 +286,11 @@ pub fn cmd_env_list() -> Vec<EnvInfo> {
                 })
                 .collect();
             let total_size = dirs.iter().map(|(_, _, s)| s).sum();
-            EnvInfo { name, dirs, total_size }
+            EnvInfo {
+                name,
+                dirs,
+                total_size,
+            }
         })
         .collect()
 }
@@ -356,8 +360,7 @@ pub fn cmd_env_rename(current: &str, new_name: &str) -> Result<(), String> {
                 fs::create_dir_all(parent)
                     .map_err(|e| format!("Failed to create parent for {} dir: {}", label, e))?;
             }
-            fs::rename(src, dst)
-                .map_err(|e| format!("Failed to rename {} dir: {}", label, e))?;
+            fs::rename(src, dst).map_err(|e| format!("Failed to rename {} dir: {}", label, e))?;
         }
     }
 
@@ -498,7 +501,6 @@ mod tests {
         let del2 = cmd_env_delete("test-env", true);
         assert!(del2.is_err());
         assert!(del2.unwrap_err().contains("does not exist"));
-
     }
 
     #[test]
@@ -509,7 +511,6 @@ mod tests {
         assert!(cmd_env_create("bad/name", None, None).is_err());
         assert!(cmd_env_create("", None, None).is_err());
         assert!(cmd_env_create("..", None, None).is_err());
-
     }
 
     #[test]
@@ -528,7 +529,6 @@ mod tests {
             fs::read_to_string(created.join("init.lua")).unwrap(),
             "-- test config"
         );
-
     }
 
     #[test]
@@ -547,7 +547,6 @@ mod tests {
             fs::read_to_string(cloned.join("init.lua")).unwrap(),
             "-- source"
         );
-
     }
 
     #[test]
@@ -572,7 +571,6 @@ mod tests {
         assert!(!env_data_dir("full-env").exists());
         assert!(!env_state_dir("full-env").exists());
         assert!(!env_cache_dir("full-env").exists());
-
     }
 
     #[test]
@@ -584,12 +582,15 @@ mod tests {
         fs::create_dir_all(&source).unwrap();
         let result = cmd_env_create("test-branch", Some(source.to_str().unwrap()), Some("main"));
         assert!(result.is_err());
-        assert!(result.unwrap_err().contains("--branch can only be used with a git URL"));
+        assert!(result
+            .unwrap_err()
+            .contains("--branch can only be used with a git URL"));
 
         let result2 = cmd_env_create("test-branch2", None, Some("main"));
         assert!(result2.is_err());
-        assert!(result2.unwrap_err().contains("--branch can only be used with a git URL"));
-
+        assert!(result2
+            .unwrap_err()
+            .contains("--branch can only be used with a git URL"));
     }
 
     // --- env fork ---
@@ -627,7 +628,6 @@ mod tests {
             fs::read_to_string(env_cache_dir("fork-dst").join("cache.txt")).unwrap(),
             "cache"
         );
-
     }
 
     #[test]
@@ -638,7 +638,6 @@ mod tests {
         let result = cmd_env_fork("nonexistent", "new-env");
         assert!(result.is_err());
         assert!(result.unwrap_err().contains("does not exist"));
-
     }
 
     #[test]
@@ -652,6 +651,5 @@ mod tests {
         let result = cmd_env_fork("fork-a", "fork-b");
         assert!(result.is_err());
         assert!(result.unwrap_err().contains("already exists"));
-
     }
 }
